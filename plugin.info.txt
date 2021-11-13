@@ -1,0 +1,7 @@
+base htmldiff
+author peterfromearth
+email coder@peterfromearth
+date 2021-11-13
+name HTML diff Plugin
+desc displays diff with wikisyntax
+url http://dokuwiki.org/plugin:htmldiff
