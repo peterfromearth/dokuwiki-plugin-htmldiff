@@ -38,16 +38,40 @@ class action_plugin_htmldiff extends DokuWiki_Action_Plugin {
         $data = $event->data;
         $difftype = $data['difftype'];
         
+        
+        
         if($difftype === 'plugin_htmldiff') {
             $config = new HtmlDiffConfig();
             
-            $l_render = p_wiki_xhtml($ID, $data['l_rev'], true, $data['l_rev']);
-            $r_render = p_wiki_xhtml($ID, $data['r_rev'], true, $data['r_rev']);
+            if(isset($data['newRevInfo'])) {
+                $oldRev = $data['oldRevInfo']['date'];
+                $newRev = $data['newRevInfo']['date'];
+                
+                $classEditType = $data['classEditType'];
+                if ( $data['newRevInfo']['rev'] !== false) {
+                    echo '<tr>'
+                        .'<td colspan="2" class="diffnav">'. $data['navOlderRevisions'] .'</td>'
+                        .'<td colspan="2" class="diffnav">'. $data['navNewerRevisions'] .'</td>'
+                        .'</tr>';
+                }
+                echo '<tr>'
+                    .'<th colspan="2"'.$classEditType($data['oldRevInfo']).'>'.$data['oldRevInfo']['navTitle'].'</th>'
+                    .'<th colspan="2"'.$classEditType($data['newRevInfo']).'>'.$data['newRevInfo']['navTitle'].'</th>'
+                    .'</tr>';
+            } else {
+                $oldRev = $data['l_rev'];
+                $newRev = $data['r_rev'];                
+            }
             
-            $l_render = preg_replace('/<a[^>]*>(.*?)<\/a>/is', '$1', $l_render);
-            $r_render = preg_replace('/<a[^>]*>(.*?)<\/a>/is', '$1', $r_render);
+            $oldRendered = p_wiki_xhtml($ID, $oldRev, true, $oldRev);
+            $newRendered = p_wiki_xhtml($ID, $newRev, true, $newRev);
             
-            $htmlDiff = HtmlDiff::create($l_render, $r_render, $config);
+            $oldRendered = preg_replace('/<a[^>]*>(.*?)<\/a>/is', '$1', $oldRendered);
+            $newRendered = preg_replace('/<a[^>]*>(.*?)<\/a>/is', '$1', $newRendered);
+            
+            
+            
+            $htmlDiff = HtmlDiff::create($oldRendered, $newRendered, $config);
     		$content = $htmlDiff->build();
     		echo '<tr><td colspan="4" class="plugin_htmldiff">';
     		echo $content;
